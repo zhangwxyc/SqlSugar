@@ -69,10 +69,7 @@ namespace SqlSugar
             {
                 var isDisableMasterSlaveSeparation = this.Updateable.Ado.IsDisableMasterSlaveSeparation;
                 this.Updateable.Ado.IsDisableMasterSlaveSeparation = true;
-                var parameters = Updateable.UpdateBuilder.Parameters;
-                if (parameters == null)
-                    parameters = new List<SugarParameter>();
-                Updateable.diffModel.AfterData = GetDiffAfterTable(updateObjects);
+                Updateable.diffModel.AfterData = GetDiffTable(updateObjects);
                 Updateable.diffModel.Time = this.Context.Ado.SqlExecutionTime;
                 if (this.Context.CurrentConnectionConfig.AopEvents.OnDiffLogEvent != null)
                     this.Context.CurrentConnectionConfig.AopEvents.OnDiffLogEvent(Updateable.diffModel);
@@ -115,40 +112,6 @@ namespace SqlSugar
             var dt = sqlDb.Ado.GetDataTable(key, parameters);
             return Updateable.GetTableDiff(dt);
         }
-        private List<DiffLogTableInfo> GetDiffAfterTable(List<T> updateObjects)
-        {
-            var builder = Updateable.UpdateBuilder.Builder;
-            var columns = Updateable.UpdateBuilder.DbColumnInfoList.GroupBy(it => it.DbColumnName).Select(it => it.Key).Distinct().ToList();
-            var tableWithString = builder.GetTranslationColumnName(Updateable.UpdateBuilder.TableName);
-            var wheres = Updateable.WhereColumnList ?? Updateable.UpdateBuilder.PrimaryKeys;
-            if (wheres == null)
-            {
-                wheres = Updateable.UpdateBuilder.DbColumnInfoList
-                    .Where(it => it.IsPrimarykey).Select(it => it.DbColumnName).Distinct().ToList();
-            }
-            var sqlDb = this.Context.CopyNew();
-            sqlDb.Aop.DataExecuting = null;
-            List<SugarParameter> parameters = new List<SugarParameter>();
-            StringBuilder allWhereString = new StringBuilder();
-            var dataColumns = sqlDb.Updateable(updateObjects).UpdateBuilder.DbColumnInfoList;
-            string columnStr = string.Join(',', dataColumns.Select(x => x.DbColumnName).Distinct().ToList());
-            foreach (var item in dataColumns.GroupBy(it => it.TableId))
-            {
-                StringBuilder whereString = new StringBuilder();
-                foreach (var whereItem in wheres)
-                {
-                    var pk = item.FirstOrDefault(it => it.DbColumnName.EqualCase(whereItem));
-                    var paraterName = FormatValue(pk.PropertyType, pk.DbColumnName, pk.Value, parameters);
-                    whereString.Append($" {pk.DbColumnName} = {paraterName} AND");
-                }
-                allWhereString.Append($" {Regex.Replace(whereString.ToString(), "AND$", "")} OR");
-            }
-            string key = $"SELECT {columnStr} FROM {tableWithString} WHERE {Regex.Replace(allWhereString.ToString(), "OR$", "")}";
-            var dt = sqlDb.Ado.GetDataTable(key, parameters);
-            return Updateable.GetTableDiff(dt);
-        }
-
-
 
         #region Values Helper
 
