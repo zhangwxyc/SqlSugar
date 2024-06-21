@@ -3,7 +3,7 @@ using System;
 
 namespace OrmTest
 {
-    
+
     public class Program
     {
         static void Main(string[] args)
@@ -11,24 +11,25 @@ namespace OrmTest
             //Each example will automatically create a table and can run independently.
             //每个例子都会自动建表 并且可以独立运行   
 
-            _1_CodeFirst.Init();
-            _2_DbFirst.Init();
-            _3_EasyQuery.Init();
-            _4_JoinQuery.Init();
-            _4_Subquery.Init();
-            _5_PageQuery.Init();
-            _6_NavQuery.Init();
-            _7_GroupQuery.Init();
-            _8_Insert.Init();
-            _9_Update.Init();
-            _a1_Delete.Init();
-            _a2_Sql.Init();
-            _a3_Merge.Init(); 
-            _a4_SplitTable.Init();
-            _a5_GridSave.Init();
-            _a6_SqlPage.Init();
-            _a7_JsonType.Init();
-            _a8_SelectReturnType.Init();
+            /*            _1_CodeFirst.Init();
+                        _2_DbFirst.Init();
+                        _3_EasyQuery.Init();
+                        _4_JoinQuery.Init();
+                        _4_Subquery.Init();
+                        _5_PageQuery.Init();
+                        _6_NavQuery.Init();
+                        _7_GroupQuery.Init();
+                        _8_Insert.Init();
+                        _9_Update.Init();
+                        _a1_Delete.Init();
+                        _a2_Sql.Init();
+                        _a3_Merge.Init(); 
+                        _a4_SplitTable.Init();
+                        _a5_GridSave.Init();
+                        _a6_SqlPage.Init();
+                        _a7_JsonType.Init();
+                        _a8_SelectReturnType.Init();*/
+            Cases.Init();
         }
     }
 
@@ -56,10 +57,11 @@ namespace OrmTest
                 IsAutoCloseConnection = true,
                 DbType = DbType.PostgreSQL,
                 ConnectionString = Connection,
-                LanguageType=LanguageType.Default//Set language
+                LanguageType = LanguageType.Default//Set language
 
             },
-            it => {
+            it =>
+            {
                 // Logging SQL statements and parameters before execution
                 // 在执行前记录 SQL 语句和参数
                 it.Aop.OnLogExecuting = (sql, para) =>

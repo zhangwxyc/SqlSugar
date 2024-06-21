@@ -1,9 +1,6 @@
 ﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrmTest
 {
@@ -23,7 +20,7 @@ namespace OrmTest
             });
             db.Aop.OnLogExecuted = (sql, pars) => //SQL executed event
             {
-                Console.WriteLine("OnLogExecuted"+sql);
+                Console.WriteLine("OnLogExecuted" + sql);
             };
             db.Aop.OnLogExecuting = (sql, pars) => //SQL executing event (pre-execution)
             {
@@ -53,15 +50,15 @@ namespace OrmTest
                 //Write logic
             };
 
-     
+
             db.Queryable<Order>().ToList();
             db.Queryable<OrderItem>().ToList();
 
             //OnDiffLogEvent
             var data = db.Queryable<Order>().First();
             data.Name = "changeName";
-            db.Updateable(data).EnableDiffLogEvent("--update Order--").ExecuteCommand();
-
+            // db.Updateable(data).EnableDiffLogEvent("--update Order--").ExecuteCommand();
+            db.Updateable(data).EnableDiffLogEvent("--update Order--").UseParameter().ExecuteCommand();
             Console.WriteLine("#### Aop End ####");
         }
     }
